@@ -1,3 +1,15 @@
+#Sublime
+*.sublime-workspace
+
+#Backups and working data
+backups/*
+!backups/.gitkeep
+
+#Rendered files
+render/*
+!render/.gitkeep
+
+## Default Github Python .gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,0 +1,53 @@
+{
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"start",
+				"cmd",
+				"/k",
+				"python",
+				"$file"
+			],
+			"name": "Python Command Line",
+			"selector": "source.python",
+			"shell": true,
+			"variants":
+			[
+				{
+					"cmd":
+					[
+						"start",
+						"cmd",
+						"/k",
+						"python",
+						"$project_path/run.py"
+					],
+					"name": "Run.py"
+				},
+				{
+					"cmd":
+					[
+						"start",
+						"cmd",
+						"/k",
+						"python",
+						"$project_path/tests/test.py"
+					],
+					"name": "Tests"
+				}
+			],
+			"working_dir": "$file_dir"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		},
+		{
+			"path": ".git"
+		}
+	]
+}
