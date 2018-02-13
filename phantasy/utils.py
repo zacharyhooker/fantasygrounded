@@ -89,9 +89,11 @@ def renderXML(xml, file=None):
     Returns:
         Beautified XML string.
     '''
+    data = {}
     if isinstance(xml, dict):
-        xml = _dicttoxml(xml)
-        print(type(xml))
+        if(len(xml)>1):
+            data['root'] = xml
+        xml = _dicttoxml(data)
     parser = etree.XMLParser(remove_blank_text=True)
     reparsed = etree.fromstring(etree.tostring(xml), parser=parser)
     if file:
@@ -111,9 +113,9 @@ def renderJSON(dict_, file=None):
         Beautified JSON string.
     """
     if isinstance(dict_, etree._ElementTree):
-        dict_ = xmltodict(dict_)
+        dict_ = dicttoxml(dict_)
     data = json.dumps(dict_, indent=4)
     if file:
         with open(file, 'w') as f:
-            file.write(data)
+            f.write(data)
     return data

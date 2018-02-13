@@ -50,7 +50,8 @@ class Campaign:
                     self.sessions[file] = {'date': str(date), 'epoch': epoch}
                 if 'db.xml' in file:
                     data = utils.xmltodict(fullpath)
-                    utils.renderXML(data)
+                    utils.renderXML(data['root']['charsheet'], 'this.xml')
+                    utils.renderJSON(data['root']['charsheet'], 'this.json')
                     #return utils.renderJSON(data)
                     #self.parseCharacters(dbdict['root']['charsheet'])
 
