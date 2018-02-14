@@ -22,16 +22,17 @@ I will be working on merging [FGModGen](https://github.com/zacharyhooker/FGModGe
 ## General Overview
 
 Search through existing campaigns:
-
+```
   from phantasy import datahelper
     data = datahelper.DataHelper()
     for campaign in x.campaigns:
       print(campaign)
+```
 Get metadata and data from a specific campaign:
-
+```
     campaign = data.getCampaign('Basic Campaign')
     print(campaign.metadata, campaign.getData())
-
+```
 ## Other Data Files
 
 The other forms of data in the root folder, some of which are listed [here](http://www.fantasygrounds.com/wiki/index.php/Data_Files_Overview), will be implemented similarly.
