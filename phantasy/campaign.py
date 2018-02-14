@@ -35,7 +35,7 @@ class Campaign:
             self.meta['campaign.xml'][value] = results
         return self.meta
 
-    def getData(self):
+    def getData(self, file_name):
         """Get data from the xml files in the directory. Currently grabs
         previous session dates and file information and the data dictionary 
         for the entire campaign.
@@ -44,16 +44,31 @@ class Campaign:
         for rootdir, subdirs, files in os.walk(self.meta['dir']):
             for file in files:
                 fullpath = os.path.join(rootdir, file)
+                data = {}
+                if file.endswith('xml'):
+                    data = utils.xmltodict(fullpath)
                 if 'db.session' in file:
                     epoch = int(file.split('.')[2])
                     date = datetime.fromtimestamp(epoch, timezone.utc).date()
                     self.sessions[file] = {'date': str(date), 'epoch': epoch}
-                if 'db.xml' in file:
-                    data = utils.xmltodict(fullpath)
-                    utils.renderXML(data['root']['charsheet'], 'this.xml')
-                    utils.renderJSON(data['root']['charsheet'], 'this.json')
-                    #return utils.renderJSON(data)
-                    #self.parseCharacters(dbdict['root']['charsheet'])
+                if file_name in file:
+                    return data
+
+    def renderData(self, tag, dir_='', json=True):
+        data = self.getData('db.xml')
+        outdir = '{}\{}'.format(dir_, tag)
+        print(outdir)
+        if tag in data['root']:
+            if outdir:
+                if json:
+                    print(outdir+'.json')
+                    utils.renderJSON(data['root'][tag], outdir + '.json')
+                else:
+                    print(outdir+'.xml')
+                    utils.renderXML(data['root'][tag], outdir + '.xml')
+
+            return data['root'][tag]
+
 
     def parseCharacters(self, charsheet):
         """Beginnings of the character XML deconstruction.

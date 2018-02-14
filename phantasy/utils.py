@@ -97,6 +97,7 @@ def renderXML(xml, file=None):
     parser = etree.XMLParser(remove_blank_text=True)
     reparsed = etree.fromstring(etree.tostring(xml), parser=parser)
     if file:
+        print(file)
         etree.ElementTree(reparsed).write(file, xml_declaration=True,
             encoding='iso-8859-1', pretty_print=True)
     return etree.tostring(reparsed, pretty_print=True)
