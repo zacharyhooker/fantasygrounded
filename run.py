@@ -11,9 +11,10 @@ def main():
             princes = x.getCampaign(campaign)
             break
     #pprint.pprint(princes.metadata, width=1)
-    print(princes.metadata)
     outdir = os.path.join(os.path.dirname(__file__), 'render')
-    princes.renderData('charsheet', outdir, False)
+    pprint.pprint(princes.getAttr('charsheet', {'name': 'Krug'}))
+    return 0
+    pprint.pprint(princes.renderData('charsheet', outdir, False))
 
 if __name__ == "__main__":
     main()

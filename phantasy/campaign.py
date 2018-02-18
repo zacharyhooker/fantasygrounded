@@ -5,6 +5,8 @@ import json
 
 class Campaign:
 
+    actions = {'db.xml':['charsheet']}
+
     """Access and store campaign data from the FG Data folder.
     
     Attributes:
@@ -54,10 +56,19 @@ class Campaign:
                 if file_name in file:
                     return data
 
+    @utils.checkAction
+    def getAttr(self, action, search = None, file = None):
+        if not file:
+            file = [k for k, v in self.actions.items() if action in v][0]
+        data = self.getData(file)['root'][action]
+        if not len(search):
+            return data             
+        key = utils.findKey(data, search)
+        return data[key]
+
     def renderData(self, tag, dir_='', json=True):
         data = self.getData('db.xml')
         outdir = '{}\{}'.format(dir_, tag)
-        print(outdir)
         if tag in data['root']:
             if outdir:
                 if json:
@@ -66,9 +77,7 @@ class Campaign:
                 else:
                     print(outdir+'.xml')
                     utils.renderXML(data['root'][tag], outdir + '.xml')
-
             return data['root'][tag]
-
 
     def parseCharacters(self, charsheet):
         """Beginnings of the character XML deconstruction.
@@ -79,3 +88,5 @@ class Campaign:
         """
         for _, data in charsheet.items():
             print(data['name']['#text'], data['personalitytraits']['#text'])
+
+

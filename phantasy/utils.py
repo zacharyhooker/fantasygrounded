@@ -8,6 +8,19 @@ it to be faster than other modules.
 https://stackoverflow.com/questions/7684333/converting-xml-to-dictionary-using-elementtree/10076823#10076823
 '''
 
+
+
+def checkAction(func):
+    """Check to see if the called action is in our existing action pool.
+    """
+    def wrapper(self, *args, **kwargs):
+        if args[0] in [x for v in self.actions.values() for x in v]:
+            return func(self, *args, **kwargs)
+        else:
+            pass
+    return wrapper
+
+
 def xmltodict(path):
     """Translates the XML into a python dictionary.
     
@@ -120,3 +133,13 @@ def renderJSON(dict_, file=None):
         with open(file, 'w') as f:
             f.write(data)
     return data
+
+
+def findKey(dict_, search):
+    data = {}
+
+    for ret, value in dict_.items():
+        for key in search:
+            if key in value:
+                if search[key] in value[key]['#text']:
+                    return ret
