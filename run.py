@@ -10,11 +10,11 @@ def main():
         if campaign.startswith('Princes'):
             princes = x.getCampaign(campaign)
             break
-    #pprint.pprint(princes.metadata, width=1)
     outdir = os.path.join(os.path.dirname(__file__), 'render')
-    pprint.pprint(princes.getAttr('charsheet', {'name': 'Krug'}))
+    pprint.pprint(princes.getAttribute('charsheet', {'name': 'Krug'}))
+    pprint.pprint(princes.getAttribute('feat', {'name': 'Great Weapon Master'}))
+    #princes.rD(princes.getAttr('charsheet', {'name': 'Krug'}), outdir)
     return 0
-    pprint.pprint(princes.renderData('charsheet', outdir, False))
 
 if __name__ == "__main__":
     main()

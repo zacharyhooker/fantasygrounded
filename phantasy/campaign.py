@@ -4,8 +4,8 @@ from phantasy import utils
 import json
 
 class Campaign:
-
-    actions = {'db.xml':['charsheet']}
+    root_attribs = {}
+    actions = {'db.xml':['charsheet', 'feat']}
 
     """Access and store campaign data from the FG Data folder.
     
@@ -43,50 +43,35 @@ class Campaign:
         for the entire campaign.
         """
         sessions = []
+        data = {}
         for rootdir, subdirs, files in os.walk(self.meta['dir']):
             for file in files:
                 fullpath = os.path.join(rootdir, file)
                 data = {}
                 if file.endswith('xml'):
                     data = utils.xmltodict(fullpath)
+                if 'db.xml' in file:
+                    for key, value in data['root'].items():
+                        if key.startswith('@'):
+                            self.root_attribs[key] = value
                 if 'db.session' in file:
                     epoch = int(file.split('.')[2])
                     date = datetime.fromtimestamp(epoch, timezone.utc).date()
                     self.sessions[file] = {'date': str(date), 'epoch': epoch}
                 if file_name in file:
                     return data
+        return data
 
     @utils.checkAction
-    def getAttr(self, action, search = None, file = None):
+    def getAttribute(self, action, search = [], file = None):
         if not file:
             file = [k for k, v in self.actions.items() if action in v][0]
         data = self.getData(file)['root'][action]
-        if not len(search):
-            return data             
-        key = utils.findKey(data, search)
-        return data[key]
-
-    def renderData(self, tag, dir_='', json=True):
-        data = self.getData('db.xml')
-        outdir = '{}\{}'.format(dir_, tag)
-        if tag in data['root']:
-            if outdir:
-                if json:
-                    print(outdir+'.json')
-                    utils.renderJSON(data['root'][tag], outdir + '.json')
-                else:
-                    print(outdir+'.xml')
-                    utils.renderXML(data['root'][tag], outdir + '.xml')
-            return data['root'][tag]
-
-    def parseCharacters(self, charsheet):
-        """Beginnings of the character XML deconstruction.
-        
-        Args:
-            charsheet: the XML etree Element of the entire, or a particular
-            character sheet in campaign.xml.
-        """
-        for _, data in charsheet.items():
-            print(data['name']['#text'], data['personalitytraits']['#text'])
-
-
+        if len(search) > 0:
+            for ret, value in data.items():
+                for key in search:
+                    if key in value:
+                        if search[key] in value[key]['#text']:
+                            return data[ret]
+        else:
+            return data

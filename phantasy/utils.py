@@ -93,7 +93,7 @@ def _dicttoxml(dict_):
     _to_etree(body, node)
     return node
 
-def renderXML(xml, file=None):
+def renderXML(xml, file=None, rootdata = None):
     '''Renders a beautified, valid, XML.
     Args:
         xml: Either the (preferred) etree.Element or the dict of XML.
@@ -103,12 +103,18 @@ def renderXML(xml, file=None):
         Beautified XML string.
     '''
     data = {}
+
     if isinstance(xml, dict):
         if(len(xml)>1):
             data['root'] = xml
+        else:
+            data = xml
         xml = _dicttoxml(data)
     parser = etree.XMLParser(remove_blank_text=True)
     reparsed = etree.fromstring(etree.tostring(xml), parser=parser)
+    if rootdata:
+        for key, value in rootdata.items():
+            reparsed.attrib[key] = str(value)
     if file:
         print(file)
         etree.ElementTree(reparsed).write(file, xml_declaration=True,
@@ -134,10 +140,17 @@ def renderJSON(dict_, file=None):
             f.write(data)
     return data
 
+def remove_keys(obj, rubbish):
+    if isinstance(obj, dict):
+        obj = {
+            key: remove_keys(value, rubbish) 
+            for key, value in obj.items()
+            if key not in rubbish}
+   
+    return obj
 
 def findKey(dict_, search):
     data = {}
-
     for ret, value in dict_.items():
         for key in search:
             if key in value:
