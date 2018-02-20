@@ -64,14 +64,31 @@ class DataHelper:
         """
         return campaign.Campaign(os.path.join(self.dir_, '/'.join(['campaigns', campaign_name])))
 
+    def backupCharacter(self, campaign, character, outdir, rootdata=None):
+        charsheet = campaign.getAttribute('charsheet', {'name': character})
+        if charsheet:
+            data = {}
+            data['root'] = {}
+            if rootdata:
+                data['root'] = rootdata
+            data['root']['character'] = charsheet
+            self.renderData(data, charsheet['name']['#text'], outdir, False)
+
+    def getCharacters(self, campaign):
+        data = []
+        for _, character in campaign.getAttribute('charsheet').items():
+            char = utils.findKey(character, 'name')
+            if char:
+                data.append(char)
+        return set(data)
+
     def renderData(self, data, tag, output_dir='', json=True):
         outdir = '{}\{}'.format(output_dir, tag)
-        if tag in data['root']:
-            if outdir:
-                if json:
-                    print(outdir+'.json')
-                    utils.renderJSON(data['root'][tag], outdir + '.json')
-                else:
-                    print(outdir+'.xml')
-                    utils.renderXML(data['root'][tag], outdir + '.xml')
-            return data['root'][tag]
+        if outdir:
+            if json:
+                print(outdir+'.json')
+                utils.renderJSON(data, outdir + '.json')
+            else:
+                print(outdir+'.xml')
+                utils.renderXML(data, outdir + '.xml')
+        return data['root']

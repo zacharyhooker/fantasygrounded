@@ -152,7 +152,5 @@ def remove_keys(obj, rubbish):
 def findKey(dict_, search):
     data = {}
     for ret, value in dict_.items():
-        for key in search:
-            if key in value:
-                if search[key] in value[key]['#text']:
-                    return ret
+        if search in ret:
+            return value['#text']
