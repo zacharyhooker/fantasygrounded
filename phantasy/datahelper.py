@@ -47,9 +47,11 @@ class DataHelper:
         Returns:
             List of campaigns by name.
         """
+        data = {}
         fulldir = os.path.join(self.dir_, 'campaigns')
-        #for campaign in next(os.walk(fulldir))[1]:
-        return next(os.walk(fulldir))[1]
+        for campaign in next(os.walk(fulldir))[1]:
+            data[campaign] = self.getCampaign(campaign)
+        return data
 
     def getCampaign(self, campaign_name):
         """Get the Campaign object based on campaign_name.
@@ -64,31 +66,41 @@ class DataHelper:
         """
         return campaign.Campaign(os.path.join(self.dir_, '/'.join(['campaigns', campaign_name])))
 
-    def backupCharacter(self, campaign, character, outdir, rootdata=None):
-        charsheet = campaign.getAttribute('charsheet', {'name': character})
-        if charsheet:
-            data = {}
-            data['root'] = {}
-            if rootdata:
-                data['root'] = rootdata
-            data['root']['character'] = charsheet
-            self.renderData(data, charsheet['name']['#text'], outdir, False)
-
     def getCharacters(self, campaign):
-        data = []
-        for _, character in campaign.getAttribute('charsheet').items():
-            char = utils.findKey(character, 'name')
-            if char:
-                data.append(char)
-        return set(data)
+        """Get a list of characters and their charsheet data.
+        
+        Args:
+            campaign: Campaign to read characters from.
+        
+        Returns:
+            Dictionary of {char_name: data}.
+        """
+        data = {}
+        charsheet = campaign.getAttribute('charsheet')
+        for key, character in charsheet.items():
+            data[utils.findKey(character, 'name')] = {'charsheet': character}
+        return data
 
-    def renderData(self, data, tag, output_dir='', json=True):
-        outdir = '{}\{}'.format(output_dir, tag)
-        if outdir:
-            if json:
-                print(outdir+'.json')
-                utils.renderJSON(data, outdir + '.json')
-            else:
-                print(outdir+'.xml')
-                utils.renderXML(data, outdir + '.xml')
-        return data['root']
+    def renderData(self, data, outfile, metadata=None, json=False):
+        """Render data to a specific file. Either XML or JSON.
+        
+        Args:
+            data: Dictionary to render out to file.
+            outfile: File including directory to write to.
+            metadata (optional): Metadata to add to the root.
+            json (optional): If true, render as json. Else render XML.
+        
+        Returns:
+            TYPE: Description
+        """
+        tmp = {}
+        if not(len(data) == 1 and 'root' in data): #wats demorgans?!11?
+            tmp['root'] = {**data, **metadata}
+        data = tmp
+        if json:
+            print(outfile+'.json')
+            utils.renderJSON(data, outfile + '.json')
+        else:
+            print(outfile+'.xml')
+            utils.renderXML(data, outfile + '.xml')
+        return data

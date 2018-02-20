@@ -50,6 +50,7 @@ def xmltodict(path):
                   data[tree.tag]['#text'] = text
             else:
                 data[tree.tag] = text
+
         return data
     tree = etree.parse(path)
     return _to_dict(tree.getroot())
@@ -150,7 +151,20 @@ def remove_keys(obj, rubbish):
     return obj
 
 def findKey(dict_, search):
+    """Find a key in a dictionary. Uses '#text' format to help with
+    the xml dictionaries.
+    
+    Args:
+        dict_: Haystack to search for.
+        search: Needle; key to search for.
+    
+    Returns:
+        Value of dict_[search]
+    """
     data = {}
-    for ret, value in dict_.items():
-        if search in ret:
-            return value['#text']
+    if len(dict_) > 0:
+        for ret, value in dict_.items():
+            if search in ret:
+                if '#text' in value:
+                    return value['#text']
+                return value

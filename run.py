@@ -4,18 +4,16 @@ import os
 
 def main():
     x = datahelper.DataHelper()
-    princes = None
-    
-    rootdata = {}
-    rootdata['@version'] = '3.3'
-    rootdata['@release'] = '8|CoreRPG:3'
-    for campaign in x.campaigns:
-        outdir = os.path.join(os.path.dirname(__file__), 'render', campaign)
+    for title, campaign in x.campaigns.items():
+        outdir = os.path.join(os.path.dirname(__file__), 'render', title)
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        cmpgn = x.getCampaign(campaign)
-        for name in x.getCharacters(cmpgn):
-            charsheet = x.backupCharacter(cmpgn, name, outdir, rootdata)
+        if 'Princes' in title:
+            characters = x.getCharacters(campaign)
+            for name, charsheet in characters.items():
+                outfile = os.path.join(outdir, name)
+                x.renderData(charsheet, outfile, campaign.metadata['db.xml'])
+                
     return 0
 
 if __name__ == "__main__":
